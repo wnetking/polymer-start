@@ -1,0 +1,125 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-viewport-calc">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      input {
+        box-sizing: border-box;
+        max-width: 100%;
+        padding: 10px 20px;
+        font-size: 1.5rem;
+      }
+
+      lable {
+        display: block;
+        margin-bottom: 10px;
+      }
+
+      .result {
+        font-size: 3rem;
+      }
+
+      .form-group {
+        margin-bottom: 10px;
+      }
+
+      @media (min-width: 920px) {
+        .viewport-calc-wrap {
+          display: flex;
+
+
+        }
+      }
+
+      .result-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-grow: 1;
+      }
+    </style>
+
+    <div class="card">
+      <div class="viewport-calc-wrap">
+        <div class="inputs-wrap">
+          <h1>Viewport calc</h1>
+          <div class="form-group">
+            <lable>Viewport (px)</lable>
+            <input id="viewport" type="number" name="viewport" value="{{viewport}}" on-change="onChange">
+          </div>
+          <div class="form-group">
+            <lable>Value that need convert (px)</lable>
+            <input id="convertValue" type="number" name="convertValue" value="[[convertValue]]" on-change="onChange">
+          </div>
+        </div>
+        <div class="result-wrap">
+          <strong class="result">[[result]]</strong>
+          <strong>vw</strong>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class ViewportCalc extends Polymer.Element {
+      static get is() { return 'my-viewport-calc'; }
+
+      constructor() {
+        super();
+      }
+
+      static get properties() {
+        return {
+          viewport: {
+            type: Number,
+            value: window.innerWidth
+          },
+          convertValue: {
+            type: Number,
+            value: 300
+          },
+          result: {
+            type: Number,
+            value: null
+          },
+        };
+      }
+
+      ready() {
+        super.ready();
+        this.getResult();
+
+      }
+
+      getResult() {
+        let result = ((this.convertValue * 100) / this.viewport)
+        this.result = result.toFixed(2);
+      }
+
+      onChange(e) {
+        this.viewport = this.$.viewport.value;
+        this.convertValue = this.$.convertValue.value;
+        this.getResult()
+      }
+    }
+
+    window.customElements.define(ViewportCalc.is, ViewportCalc);
+  </script>
+</dom-module>
