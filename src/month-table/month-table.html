@@ -1,0 +1,116 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="month-table">
+  <template>
+    <style>
+    </style>
+
+    Hello world! [[month]]
+
+    <table>
+      <tr>
+        <th>[[month]]</th>
+        <th>Start day</th>
+        <th>End day</th>
+        <th>Break</th>
+        <th>Work day long</th>
+        <th>Base log</th>
+      </tr>
+      <template is="dom-repeat" items="{{days}}">
+        <tr>
+          <td>[[item.day]]</td>
+          <td>[[item.start]]</td>
+          <td>[[item.end]]</td>
+          <td>[[item.break]]</td>
+          <td>[[item.dayLong]]</td>
+          <td>[[item.log]]</td>
+        </tr>
+      </template>
+    </table>
+  </template>
+  <script>
+    class MonthTable extends Polymer.Element {
+      static get is() { return 'month-table'; }
+
+      constructor() {
+        super();
+        this.monthsName = [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December",
+        ]
+      }
+
+      static get properties() {
+        return {
+          month: {
+            type: Date,
+            value: `${new Date().getUTCMonth() + 1}/${new Date().getUTCFullYear()}`,
+          },
+
+          days: {
+            type: Array,
+            value() {
+              return this.setAllDays();
+            }
+          }
+        };
+      }
+
+      setAllDays() {
+        let maxDays = this.daysInMonth(this.month);
+        let result = [];
+
+        for (let i = 1; i <= maxDays; i++) {
+          result.push({
+            day: i,
+            start: '',
+            end: '',
+            break: '',
+            dayLong: '',
+            log: ''
+          })
+        }
+
+        return result;
+      }
+
+      daysInMonth(m) {
+        let month = m.split('/');
+        return new Date(month[1], month[0], 0).getDate();
+      }
+
+
+      /*
+      * Lifecycle methods
+      */
+      ready() {
+        super.ready();
+        this.setAllDays();
+      }
+    }
+
+    window.customElements.define(MonthTable.is, MonthTable);
+  </script>
+</dom-module>
