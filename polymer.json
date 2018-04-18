@@ -2,16 +2,13 @@
   "entrypoint": "index.html",
   "shell": "src/my-app.html",
   "fragments": [
-    "src/viewport-calc.html",
+    "src/my-viewport-calc.html",
     "src/my-view2.html",
     "src/my-view3.html",
     "src/my-new-view.html",
     "src/my-view404.html"
   ],
-  "sources": [
-    "images/**/*",
-    "src/**/*"
-  ],
+  "sources": ["images/**/*", "src/**/*"],
   "extraDependencies": [
     "bower_components/webcomponentsjs/*.js",
     "!bower_components/webcomponentsjs/gulpfile.js",

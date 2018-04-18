@@ -20,11 +20,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 10px;
       }
 
-      input {
+      input,
+      .btn {
         box-sizing: border-box;
         max-width: 100%;
         padding: 10px 20px;
         font-size: 1.5rem;
+        border: 1px solid #737373;
+      }
+
+      .btn {
+        width: 100%;
+        background-color: transparent;
+        cursor: pointer;
       }
 
       lable {
@@ -70,7 +78,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </div>
         </div>
         <div class="result-wrap">
-          <strong class="result">[[result]]</strong>
+          <strong class="result" id="result">[[result]]</strong>
           <strong>vw</strong>
         </div>
       </div>
@@ -113,7 +121,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.result = result.toFixed(2);
       }
 
-      onChange(e) {
+      onChange() {
         this.viewport = this.$.viewport.value;
         this.convertValue = this.$.convertValue.value;
         this.getResult()
