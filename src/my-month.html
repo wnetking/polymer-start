@@ -1,0 +1,142 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/moment-js/moment-js.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="my-day.html">
+
+<dom-module id="my-month">
+  <template>
+    <style>
+      :host {
+        display: block;
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 50px;
+        border-collapse: collapse;
+      }
+
+      tr {
+        border-bottom: 1px solid #ccc;
+        text-align: left;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+      }
+
+      moment-js {
+        font-size: 20px;
+        font-weight: 500;
+      }
+
+      .open {
+        margin-left: auto;
+      }
+
+      paper-button.close {
+        background-color: var(--paper-red-500);
+        color: white;
+      }
+    </style>
+
+    <header>
+      <moment-js date="[[date]]" date-format="YYYY-MM-DD HH:mm" format="MMMM"></moment-js>
+      &nbsp;-&nbsp;
+      <moment-js date="[[date]]" date-format="YYYY-MM-DD HH:mm" format="YYYY"></moment-js>
+
+      <paper-button class="open" on-click="_toggleDetails" toggles raised>
+        <span hidden$="{{showDetails}}">Open</span>
+        <span hidden$="{{!showDetails}}">Close</span>
+      </paper-button>
+
+      <paper-button class="close" on-click="deleteFallback" raised>&#10006</paper-button>
+    </header>
+
+    <table hidden$="{{!showDetails}}" class="">
+      <tr>
+        <th>Day</th>
+        <th>Start</th>
+        <th>End</th>
+        <th>Break</th>
+        <th>Work day long</th>
+        <th>Log</th>
+      </tr>
+
+      <template is="dom-repeat" items="{{monthDays}}">
+        <my-day date="{{item}}"></my-day>
+      </template>
+    </table>
+
+  </template>
+  <script>
+    class MonthTable extends Polymer.Element {
+      static get is() { return 'my-month'; }
+
+      static get properties() {
+        return {
+          // date string, pass in parent
+          date: {
+            type: String
+          },
+
+          //all month days array in format YYYY-MM-D
+          monthDays: {
+            type: Array,
+            value: []
+          },
+
+          //show days of month
+          showDetails: {
+            type: Boolean,
+            value: false
+          },
+
+          //
+          deleteFallback: {
+            type: Function
+          }
+        }
+      }
+
+      // Detect how mutch days in current month
+      _daysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+      }
+
+      //all month days array in format YYYY-MM-D creator
+      _allMonthDays() {
+        let date = this.date.split('-');
+        let monthCount = this._daysInMonth(date[0], date[1]);
+        let result = [];
+
+        for (let i = 0; i <= monthCount; i++) {
+          result.push(`${this.date}-${i + 1}`);
+        }
+
+        this.monthDays = result;
+      }
+
+      // toggle month days
+      _toggleDetails() {
+        this.showDetails = !this.showDetails
+      }
+
+      constructor() {
+        super()
+      }
+
+      ready() {
+        super.ready();
+        this._allMonthDays();
+      }
+    }
+
+    window.customElements.define(MonthTable.is, MonthTable);
+  </script>
+</dom-module>

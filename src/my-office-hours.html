@@ -1,0 +1,95 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="my-month.html">
+<link rel="import" href="shared-styles.html">
+
+<firebase-app auth-domain="polymer-start-98463.firebaseapp.com" database-url="https://polymer-start-98463.firebaseio.com"
+  api-key="AIzaSyCHut4dSsBhEiEi8ZNy5y4H8GlYbBXBGiY" storage-bucket="polymer-start-98463.appspot.com" messaging-sender-id="72486834499">
+</firebase-app>
+
+<dom-module id="my-office-hours">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      @media (min-width: 768px) {
+        :host {
+          padding: 10px;
+
+        }
+      }
+
+      .month-wrapp {
+        padding: 20px 20px 0 20px;
+        border: 1px solid #ccc;
+      }
+    </style>
+
+    <div class="card">
+      <vaadin-date-picker label="Pick a month" id="userMonth"></vaadin-date-picker>
+
+      <p>
+        <paper-button raised on-click="_addMonth">Add Month</paper-button>
+      </p>
+
+      <div class="month-wrapp" hidden$="{{!months.length}}">
+        <template is="dom-repeat" items="{{months}}">
+          <my-month date="{{item}}" delete-fallback="[[_deleteMonth(item)]]"></my-month>
+        </template>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    class MyOfficeHours extends Polymer.Element {
+      static get is() { return 'my-office-hours'; }
+
+      constructor() {
+        super();
+      }
+
+      static get properties() {
+        return {
+          months: {
+            type: Array,
+            value: []
+          }
+        };
+      }
+
+      _addMonth() {
+        let month = this.$.userMonth.value.split("-", 2).join('-');
+        let filterMonths = this.months.filter(item => item === month);
+
+        if (!filterMonths.length) {
+          this.push('months', month);
+        }
+      }
+
+      _deleteMonth(month) {
+        let fallback = () => {
+          this.months = this.months.filter(item => item !== month);
+        }
+
+        return fallback;
+      }
+    }
+
+    window.customElements.define(MyOfficeHours.is, MyOfficeHours);
+  </script>
+</dom-module>

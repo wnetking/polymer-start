@@ -1,0 +1,78 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/moment-js/moment-js.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<dom-module id="my-day">
+  <template>
+    <style>
+      :host {
+        display: table-row;
+        border-bottom: 1px solid #ccc;
+      }
+
+      :host([weekend-day]) td {
+        padding: 2px 10px;
+        background-color: #dddddd;
+        color: #000;
+      }
+
+      td {
+        padding: 2px;
+        vertical-align: middle;
+      }
+    </style>
+    <td>
+      <moment-js date="{{date}}" date-format="YYYY-MM-DD HH:mm" format="DD - dddd" formatted-date="{{formatedDate}}"></moment-js>
+    </td>
+    <td>
+      <paper-input></paper-input>
+    </td>
+    <td>
+      <paper-input></paper-input>
+    </td>
+    <td>
+      <paper-input></paper-input>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+  </template>
+  <script>
+    class MyDay extends Polymer.Element {
+      static get is() { return 'my-day'; }
+
+      static get properties() {
+        return {
+          date: {
+            type: String
+          },
+          formatedDate: {
+            type: String,
+            observer: '_foramedDateChanged'
+          },
+          weekendDay: {
+            type: Boolean,
+            notify: true,
+            reflectToAttribute: true,
+            value: false
+          }
+        }
+      }
+
+      _foramedDateChanged() {
+        let isWeekend = this.formatedDate.match(/Sunday/) || this.formatedDate.match(/Saturday/)
+
+        if (isWeekend) {
+          this.weekendDay = true;
+        }
+      }
+
+      constructor() {
+        super();
+      }
+    }
+
+    window.customElements.define(MyDay.is, MyDay);
+  </script>
+</dom-module>

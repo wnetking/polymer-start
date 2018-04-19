@@ -1,8 +1,6 @@
 {
   "name": "polymer-starter-kit",
-  "authors": [
-    "The Polymer Authors"
-  ],
+  "authors": ["The Polymer Authors"],
   "license": "https://polymer.github.io/LICENSE.txt",
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#^2.0.0",
@@ -16,7 +14,9 @@
     "polymer": "Polymer/polymer#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.2",
-    "cbn-copy-clipboard": "CBN-IT/cbn-copy-clipboard#^1.0.1"
+    "google-signin": "GoogleWebComponents/google-signin#^2.0.0",
+    "firebase-element": "GoogleWebComponents/firebase-element#^1.0.16",
+    "polymerfire": "firebase/polymerfire#^2.2.1"
   },
   "resolutions": {
     "polymer": "^2.0.0"
