@@ -8,56 +8,103 @@
       :host {
         display: table-row;
         border-bottom: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+        border-left: 1px solid #ccc;
       }
 
       :host([weekend-day]) td {
-        padding: 2px 10px;
         background-color: #dddddd;
         color: #000;
       }
 
       td {
-        padding: 2px;
+        padding: 2px 10px;
         vertical-align: middle;
       }
+
+      paper-input {
+        max-width: 150px;
+      }
     </style>
+
     <td>
       <moment-js date="{{date}}" date-format="YYYY-MM-DD HH:mm" format="DD - dddd" formatted-date="{{formatedDate}}"></moment-js>
     </td>
     <td>
-      <paper-input></paper-input>
+      <paper-input id="startDay" value="{{startDay}}" on-change="_workDayLongCalc"></paper-input>
     </td>
     <td>
-      <paper-input></paper-input>
+      <paper-input id="endDay" value="{{endDay}}" on-change="_workDayLongCalc"></paper-input>
     </td>
     <td>
-      <paper-input></paper-input>
+      <paper-input id="breakInDay" value="{{breakInDay}}" on-change="_breakCalc"></paper-input>
     </td>
     <td>
+      {{workDayLong}}
     </td>
     <td>
+      {{log}}
     </td>
   </template>
   <script>
     class MyDay extends Polymer.Element {
       static get is() { return 'my-day'; }
 
+      constructor() {
+        super();
+        this.localStorageName = 'my-office-hours/days-month'
+      }
+
       static get properties() {
         return {
+          //date string
           date: {
             type: String
           },
+
+          //formated date
           formatedDate: {
             type: String,
             observer: '_foramedDateChanged'
           },
+
+          //weekend day attr
           weekendDay: {
             type: Boolean,
             notify: true,
             reflectToAttribute: true,
             value: false
+          },
+
+          //start day time
+          startDay: {
+            type: String
+          },
+
+          //start day time
+          endDay: {
+            type: String
+          },
+
+          //start day time
+          breakInDay: {
+            type: String
+          },
+
+          workDayLong: {
+            type: Number,
+          },
+
+          log: {
+            type: String,
           }
         }
+      }
+
+      static get observers() {
+        return [
+          '_saveValue(startDay, endDay, breakInDay)'
+        ]
       }
 
       _foramedDateChanged() {
@@ -68,8 +115,114 @@
         }
       }
 
-      constructor() {
-        super();
+      // Work Day Long Calculation
+      _workDayLongCalc() {
+        let start = this.$.startDay.value
+        let end = this.$.endDay.value
+        let startDate, endDate, diff, diffInHours;
+
+        if (!start && !end) {
+          this.workDayLong = null;
+
+          return;
+        }
+
+        if (!start || !end) return;
+
+        startDate = new Date(`${this.date} ${start}`);
+        endDate = new Date(`${this.date} ${end}`);
+
+        diff = endDate.valueOf() - startDate.valueOf();
+        diffInHours = diff / 1000 / 60 / 60;
+
+        this.workDayLong = diffInHours.toFixed(2)
+      }
+
+      // Break calculation
+      _breakCalc() {
+        if (!this.$.breakInDay.value) {
+          this.breakInDay = '';
+          this.log = null;
+          return;
+        }
+
+        let arrayValue = this.$.breakInDay.value.trim().split(' ');
+        let breakHourse;
+
+        this.breakInDay = this.$.breakInDay.value.trim();
+
+        if (!arrayValue) return;
+
+        if (arrayValue.length === 1) {
+          if (arrayValue[0].match(/m/)) {
+            breakHourse = parseInt(arrayValue[0], 10) / 60;
+          } else {
+            breakHourse = parseInt(arrayValue[0], 10);
+          }
+
+        } else {
+          breakHourse = parseInt(arrayValue[0], 10) + parseInt(arrayValue[1], 10) / 60;
+        }
+
+        this.log = this.workDayLong - breakHourse.toFixed(2);
+      }
+
+      //Local storage date load function
+      _loadLocalStorageDate() {
+        let strDayData = localStorage.getItem(this.localStorageName);
+        let dayData;
+
+        if (!strDayData) return;
+
+        dayData = JSON.parse(strDayData);
+
+        if (dayData[this.date]) {
+          let currentData = dayData[this.date];
+
+          this.startDay = currentData.startDay;
+          this.endDay = currentData.endDay;
+          this.breakInDay = currentData.breakInDay;
+
+          this._workDayLongCalc();
+          this._breakCalc();
+        }
+      }
+
+      //save value to local storage
+      _saveValue(startDay, endDay, breakInDay) {
+        let strDayData = localStorage.getItem(this.localStorageName);
+        let dayData, newDayData, newStrDayData;
+        let saveData = {
+          [this.date]: {
+            startDay: startDay,
+            endDay: endDay,
+            breakInDay: breakInDay
+          }
+        }
+
+        let saveToLS = (data) => {
+          let strData = JSON.stringify(data);
+
+          if (!strData) return;
+
+          localStorage.setItem(this.localStorageName, strData);
+        }
+
+        if (strDayData) {
+          dayData = JSON.parse(strDayData);
+          newDayData = Object.assign(dayData, saveData);
+
+          saveToLS(newDayData)
+        } else {
+          newDayData = Object.assign({}, saveData);
+
+          saveToLS(newDayData)
+        }
+      }
+
+      ready() {
+        super.ready()
+        this._loadLocalStorageDate();
       }
     }
 

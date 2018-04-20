@@ -61,6 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       constructor() {
         super();
+        this.localStorageName = 'my-office-hours/months'
       }
 
       static get properties() {
@@ -78,15 +79,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         if (!filterMonths.length) {
           this.push('months', month);
+
+          this._localStorage();
         }
       }
 
       _deleteMonth(month) {
         let fallback = () => {
           this.months = this.months.filter(item => item !== month);
+
+          this._localStorage();
         }
 
         return fallback;
+      }
+
+      _localStorage() {
+        let strMonths = JSON.stringify(this.months);
+
+        if (!strMonths) return;
+
+        localStorage.setItem(this.localStorageName, strMonths);
+      }
+
+      _loadLocalStorageData() {
+        let strMonths = localStorage.getItem(this.localStorageName);
+
+        if (!strMonths) return;
+
+        this.months = JSON.parse(strMonths);
+      }
+
+      ready() {
+        super.ready();
+        this._loadLocalStorageData();
       }
     }
 
